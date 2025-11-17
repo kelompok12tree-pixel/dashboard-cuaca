@@ -1,11 +1,96 @@
-     <!DOCTYPE html>
-     <html>
-       <head>
-         <title>Dashboard Cuaca</title>
-       </head>
-       <body>
-         <h1>Selamat datang di Dashboard Cuaca!</h1>
-         <p>Ini adalah halaman utama situs Anda.</p>
-       </body>
-     </html>
-     
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Cuaca</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    h1 {
+      color: #005f99;
+      margin-bottom: 5px;
+    }
+    p.subtitle {
+      font-size: 18px;
+      color: #004466;
+    }
+    .weather-dashboard {
+      max-width: 600px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 25px;
+      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    .weather-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+    .weather-info div {
+      text-align: center;
+    }
+    .temp {
+      font-size: 48px;
+      font-weight: bold;
+      color: #ff6600;
+    }
+    .icon {
+      width: 80px;
+      height: 80px;
+    }
+    .condition {
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #0077cc;
+    }
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Selamat datang di Dashboard Cuaca!</h1>
+  <p class="subtitle">Informasi cuaca terkini di tempat Anda.</p>
+</header>
+
+<section class="weather-dashboard">
+  <div class="weather-info">
+    <div>
+      <img src="https://openweathermap.org/img/wn/10d@2x.png" alt="Rain Icon" class="icon" />
+    </div>
+    <div>
+      <div class="temp">27°C</div>
+      <div class="condition">Hujan Ringan</div>
+    </div>
+  </div>
+  <div style="text-align: center; margin-top: 20px;">
+    <p>Kelembapan: 85%</p>
+    <p>Kecepatan Angin: 12 km/jam</p>
+    <p>Lokasi: Jakarta</p>
+  </div>
+</section>
+
+<footer>
+  &copy; 2024 Dashboard Cuaca - Data cuaca hanya contoh statis.
+</footer>
+
+</body>
+</html>
