@@ -5,7 +5,6 @@
   <title>Dashboard Monitoring Cuaca</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Bootstrap 5 -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
     rel="stylesheet"
@@ -25,11 +24,12 @@
   <div class="container py-4">
     <div class="row justify-content-center">
       <div class="col-lg-8">
+
+        <!-- CARD DATA KONDISI SAAT INI -->
         <div class="card shadow-sm mb-4">
           <div class="card-body text-center">
             <h2 class="mb-3">Dashboard Monitoring Cuaca</h2>
 
-            <!-- STATUS KONEKSI -->
             <div
               id="status-firebase"
               class="alert alert-danger py-2"
@@ -38,7 +38,6 @@
               Terputus dari Firebase
             </div>
 
-            <!-- KARTU NILAI -->
             <div class="row g-3 mt-1">
               <div class="col-md-4">
                 <div class="card h-100">
@@ -68,7 +67,6 @@
               </div>
             </div>
 
-            <!-- WAKTU -->
             <div class="mt-4">
               <p id="nilai-waktu" class="mb-1">--</p>
               <p id="last-update-text" class="text-muted">
@@ -78,26 +76,26 @@
           </div>
         </div>
 
-        <!-- GRAFIK REALTIME -->
+        <!-- CARD GRAFIK -->
         <div class="card shadow-sm">
           <div class="card-body">
             <h4 class="mb-3 text-center">Grafik Realtime Kondisi Saat Ini</h4>
             <canvas id="grafik-kondisi" height="120"></canvas>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 
-  <!-- Chart.js CDN -->
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Firebase + Dashboard Logic -->
+  <!-- Firebase + logika dashboard -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    // KONFIGURASI PROJECTMU
     const firebaseConfig = {
       apiKey: "AIzaSyCcTrvQyf5g2AAmHOLuXQeBbeR4hjGxYSw",
       authDomain: "monitoring-kel-12.firebaseapp.com",
@@ -105,13 +103,11 @@
         "https://monitoring-kel-12-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "monitoring-kel-12",
       storageBucket: "monitoring-kel-12.appspot.com"
-      // messagingSenderId dan appId boleh ditambah, tidak wajib untuk baca RTDB
     };
 
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
 
-    // ELEMEN DOM
     const elStatus     = document.getElementById("status-firebase");
     const elAngin      = document.getElementById("nilai-angin");
     const elHujan      = document.getElementById("nilai-hujan");
@@ -119,7 +115,6 @@
     const elWaktu      = document.getElementById("nilai-waktu");
     const elLastUpdate = document.getElementById("last-update-text");
 
-    // REFERENSI NODE KONDISI SAAT INI
     const kondisiRef = ref(db, "/A_KondisiSaatIni");
 
     // ====== INISIALISASI GRAFIK ======
@@ -166,10 +161,7 @@
         stacked: false,
         scales: {
           x: {
-            ticks: {
-              maxRotation: 0,
-              autoSkip: true
-            }
+            ticks: { maxRotation: 0, autoSkip: true }
           },
           y: {
             beginAtZero: true,
@@ -189,7 +181,6 @@
       kondisiRef,
       (snap) => {
         const data = snap.val();
-
         if (!data) {
           elStatus.className = "alert alert-warning py-2";
           elStatus.textContent =
@@ -210,7 +201,7 @@
         const cahaya = Number(data.cahaya_lx  ?? 0).toFixed(1);
         const waktu  = data.waktu ?? "--";
 
-        // Update kartu nilai
+        // Update kartu
         elAngin.textContent  = angin;
         elHujan.textContent  = hujan;
         elCahaya.textContent = cahaya;
