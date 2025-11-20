@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard Monitoring Cuaca</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      background-color: #f5f5f5;
+    }
+    .card-value {
+      font-size: 2.2rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-body text-center">
+            <h2 class="mb-3">Dashboard Monitoring Cuaca</h2>
+
+            <!-- STATUS KONEKSI -->
+            <div
+              id="status-firebase"
+              class="alert alert-danger py-2"
+              role="alert"
+            >
+              Terputus dari Firebase
+            </div>
+
+            <!-- KARTU NILAI -->
+            <div class="row g-3 mt-1">
+              <div class="col-md-4">
+                <div class="card h-100">
+                  <div class="card-body text-center">
+                    <h6 class="mb-2">Kecepatan Angin (m/s)</h6>
+                    <div id="nilai-angin" class="card-value">--</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="card h-100">
+                  <div class="card-body text-center">
+                    <h6 class="mb-2">Curah Hujan (mm)</h6>
+                    <div id="nilai-hujan" class="card-value">--</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="card h-100">
+                  <div class="card-body text-center">
+                    <h6 class="mb-2">Intensitas Cahaya (lx)</h6>
+                    <div id="nilai-cahaya" class="card-value">--</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WAKTU -->
+            <div class="mt-4">
+              <p id="nilai-waktu" class="mb-1">--</p>
+              <p id="last-update-text" class="text-muted">
+                Mencoba menghubungkan kembali...
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIREBASE + SCRIPT (v9 modular) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    // KONFIGURASI PROJECTMU
+    const firebaseConfig = {
+      apiKey: "AIzaSyCcTrvQyf5g2AAmHOLuXQeBbeR4hjGxYSw",
+      authDomain: "monitoring-kel-12.firebaseapp.com",
+      databaseURL:
+        "https://monitoring-kel-12-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "monitoring-kel-12",
+      storageBucket: "monitoring-kel-12.appspot.com",
+      messagingSenderId: "ISI_DARI_FIREBASE_CONSOLE",
+      appId: "ISI_DARI_FIREBASE_CONSOLE",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // ELEMEN DOM
+    const elStatus = document.getElementById("status-firebase");
+    const elAngin = document.getElementById("nilai-angin");
+    const elHujan = document.getElementById("nilai-hujan");
+    const elCahaya = document.getElementById("nilai-cahaya");
+    const elWaktu = document.getElementById("nilai-waktu");
+    const elLastUpdate = document.getElementById("last-update-text");
+
+    // REFERENSI KE NODE VERSI ALATMU
+    const kondisiRef = ref(db, "/A_KondisiSaatIni");
+
+    // LISTEN REALTIME
+    onValue(
+      kondisiRef,
+      (snap) => {
+        const data = snap.val();
+
+        if (!data) {
+          elStatus.className = "alert alert-warning py-2";
+          elStatus.textContent =
+            "Terhubung ke Firebase, tetapi data A_KondisiSaatIni kosong";
+          elAngin.textContent = "--";
+          elHujan.textContent = "--";
+          elCahaya.textContent = "--";
+          elWaktu.textContent = "--";
+          elLastUpdate.textContent = "Belum ada data dari alat.";
+          return;
+        }
+
+        elStatus.className = "alert alert-success py-2";
+        elStatus.textContent = "Terhubung ke Firebase";
+
+        const angin = Number(data.angin_mps ?? 0).toFixed(2);
+        const hujan = Number(data.hujan_mm ?? 0).toFixed(2);
+        const cahaya = Number(data.cahaya_lx ?? 0).toFixed(1);
+        const waktu = data.waktu ?? "-";
+
+        elAngin.textContent = angin;
+        elHujan.textContent = hujan;
+        elCahaya.textContent = cahaya;
+        elWaktu.textContent = waktu;
+        elLastUpdate.textContent = "Terakhir update: " + waktu;
+      },
+      (err) => {
+        console.error(err);
+        elStatus.className = "alert alert-danger py-2";
+        elStatus.textContent = "Terputus dari Firebase: " + err.code;
+        elAngin.textContent = "--";
+        elHujan.textContent = "--";
+        elCahaya.textContent = "--";
+        elWaktu.textContent = "--";
+        elLastUpdate.textContent = "Mencoba menghubungkan kembali...";
+      }
+    );
+  </script>
+</body>
+</html>
