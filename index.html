@@ -235,3 +235,158 @@
   </script>
 </body>
 </html>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCcTrvQyf5g2AAmHOLuXQeBbeR4hjGxYSw",
+    authDomain: "monitoring-kel-12.firebaseapp.com",
+    databaseURL: "https://monitoring-kel-12-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "monitoring-kel-12",
+    storageBucket: "monitoring-kel-12.appspot.com"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  const elStatus     = document.getElementById("status-firebase");
+  const elAngin      = document.getElementById("nilai-angin");
+  const elHujan      = document.getElementById("nilai-hujan");
+  const elCahaya     = document.getElementById("nilai-cahaya");
+  const elWaktu      = document.getElementById("nilai-waktu");
+  const elLastUpdate = document.getElementById("last-update-text");
+
+  const kondisiRef = ref(db, "/A_KondisiSaatIni");
+
+  // ====== GRAFIK HISTORY PER MENIT (HARI INI) ======
+  const ctx = document.getElementById("grafik-kondisi").getContext("2d");
+  const chartKondisi = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: [], // "HH:MM"
+      datasets: [
+        {
+          label: "Angin rata2 (m/s)",
+          data: [],
+          borderColor: "rgb(54, 162, 235)",
+          backgroundColor: "rgba(54, 162, 235, 0.15)",
+          tension: 0.25,
+          yAxisID: "y"
+        },
+        {
+          label: "Hujan rata2 (mm)",
+          data: [],
+          borderColor: "rgb(75, 192, 192)",
+          backgroundColor: "rgba(75, 192, 192, 0.15)",
+          tension: 0.25,
+          yAxisID: "y"
+        },
+        {
+          label: "Cahaya rata2 (lx)",
+          data: [],
+          borderColor: "rgb(255, 159, 64)",
+          backgroundColor: "rgba(255, 159, 64, 0.15)",
+          tension: 0.25,
+          yAxisID: "y2"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: "index", intersect: false },
+      stacked: false,
+      scales: {
+        x: {
+          ticks: { maxRotation: 0, autoSkip: true }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "Angin / Hujan" }
+        },
+        y2: {
+          position: "right",
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: "Cahaya (lx)" }
+        }
+      }
+    }
+  });
+
+  async function loadHistoryPerMenitHariIni() {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm   = String(now.getMonth() + 1).padStart(2, "0");
+    const dd   = String(now.getDate()).padStart(2, "0");
+    const tanggalKey = `${yyyy}-${mm}-${dd}`;
+
+    const baseRef = ref(db);
+    const snap = await get(child(baseRef, `/C_PerMenit_Avg/${tanggalKey}`));
+
+    chartKondisi.data.labels = [];
+    chartKondisi.data.datasets.forEach(ds => ds.data = []);
+
+    if (!snap.exists()) {
+      elLastUpdate.textContent = `Belum ada data per-menit untuk ${tanggalKey}`;
+      chartKondisi.update();
+      return;
+    }
+
+    const dataObj = snap.val(); // { "HH-MM": {angin_rata2:..} , ... }
+
+    const keys = Object.keys(dataObj).sort(); // urut jam-menit
+    keys.forEach(key => {
+      const m = dataObj[key];
+      const label = key.replace("-", ":"); // "HH-MM" -> "HH:MM"
+      chartKondisi.data.labels.push(label);
+      chartKondisi.data.datasets[0].data.push(Number(m.angin_rata2  ?? 0));
+      chartKondisi.data.datasets[1].data.push(Number(m.hujan_rata2  ?? 0));
+      chartKondisi.data.datasets[2].data.push(Number(m.cahaya_rata2 ?? 0));
+    });
+
+    chartKondisi.update();
+  }
+
+  // ====== UPDATE KARTU KONDISI SAAT INI (tetap realtime) ======
+  onValue(
+    kondisiRef,
+    (snap) => {
+      const data = snap.val();
+      if (!data) {
+        elStatus.className = "alert alert-warning py-2";
+        elStatus.textContent =
+          "Terhubung ke Firebase, tetapi A_KondisiSaatIni kosong";
+        elAngin.textContent  = "--";
+        elHujan.textContent  = "--";
+        elCahaya.textContent = "--";
+        elWaktu.textContent  = "--";
+        return;
+      }
+
+      elStatus.className = "alert alert-success py-2";
+      elStatus.textContent = "Terhubung ke Firebase";
+
+      const angin  = Number(data.angin_mps  ?? 0).toFixed(2);
+      const hujan  = Number(data.hujan_mm   ?? 0).toFixed(2);
+      const cahaya = Number(data.cahaya_lx  ?? 0).toFixed(1);
+      const waktu  = data.waktu ?? "--";
+
+      elAngin.textContent  = angin;
+      elHujan.textContent  = hujan;
+      elCahaya.textContent = cahaya;
+      elWaktu.textContent  = waktu;
+      elLastUpdate.textContent = "Terakhir update: " + waktu;
+    },
+    (err) => {
+      console.error(err);
+      elStatus.className = "alert alert-danger py-2";
+      elStatus.textContent = "Terputus dari Firebase: " + err.code;
+    }
+  );
+
+  // load history sekali saat halaman dibuka
+  loadHistoryPerMenitHariIni();
+</script>
