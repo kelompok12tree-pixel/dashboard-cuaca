@@ -77,12 +77,12 @@
           </div>
         </div>
 
-        <!-- CARD GRAFIK HISTORY PER MENIT -->
+        <!-- CARD GRAFIK PER HARI -->
         <div class="card shadow-sm">
           <div class="card-body">
-            <h4 class="mb-3 text-center">Grafik History Per-Menit (Hari Ini)</h4>
+            <h4 class="mb-3 text-center">Grafik Rata-rata Per Hari (Bulan Ini)</h4>
             <p class="text-center text-muted mb-2" id="info-history">
-              Menampilkan rata-rata per-menit dari C_PerMenit_Avg untuk hari ini.
+              Menampilkan rata-rata per hari dari E_PerHari_Avg untuk bulan ini.
             </p>
             <canvas id="grafik-kondisi" height="120"></canvas>
           </div>
@@ -128,12 +128,12 @@
 
     const kondisiRef = ref(db, "/A_KondisiSaatIni");
 
-    // ====== GRAFIK HISTORY PER MENIT (HARI INI) ======
+    // ====== GRAFIK HISTORY PER HARI (BULAN INI) ======
     const ctx = document.getElementById("grafik-kondisi").getContext("2d");
     const chartKondisi = new Chart(ctx, {
       type: "line",
       data: {
-        labels: [], // "HH:MM"
+        labels: [], // "DD"
         datasets: [
           {
             label: "Angin rata2 (m/s)",
@@ -167,7 +167,7 @@
         stacked: false,
         scales: {
           x: {
-            ticks: { maxRotation: 0, autoSkip: true }
+            ticks: { maxRotation: 0, autoSkip: false }
           },
           y: {
             beginAtZero: true,
@@ -182,39 +182,50 @@
       }
     });
 
-    async function loadHistoryPerMenitHariIni() {
+    async function loadHistoryPerHariBulanIni() {
       const now  = new Date();
       const yyyy = now.getFullYear();
       const mm   = String(now.getMonth() + 1).padStart(2, "0");
-      const dd   = String(now.getDate()).padStart(2, "0");
-      const tanggalKey = `${yyyy}-${mm}-${dd}`;
+      const bulanKeyPrefix = `${yyyy}-${mm}-`; // contoh "2025-11-"
 
       elInfoHist.textContent =
-        `Menampilkan data rata-rata per-menit untuk ${tanggalKey} dari C_PerMenit_Avg.`;
+        `Menampilkan data rata-rata per hari untuk ${yyyy}-${mm} dari E_PerHari_Avg.`;
 
       const baseRef = ref(db);
-      const snap = await get(child(baseRef, `/C_PerMenit_Avg/${tanggalKey}`));
+      // Di /E_PerHari_Avg langsung berisi key YYYY-MM-DD
+      const snap = await get(child(baseRef, `/E_PerHari_Avg`));
 
       chartKondisi.data.labels = [];
       chartKondisi.data.datasets.forEach(ds => (ds.data = []));
 
       if (!snap.exists()) {
         elLastUpdate.textContent =
-          `Belum ada data per-menit untuk ${tanggalKey} di C_PerMenit_Avg.`;
+          `Belum ada data di E_PerHari_Avg.`;
         chartKondisi.update();
         return;
       }
 
-      const dataObj = snap.val(); // { "HH-MM": {angin_rata2:..} , ... }
-      const keys = Object.keys(dataObj).sort(); // urut jam-menit
+      const allDays = snap.val(); // { "YYYY-MM-DD": {...}, ... }
 
-      keys.forEach((key) => {
-        const m = dataObj[key];
-        const label = key.replace("-", ":"); // "HH-MM" -> "HH:MM"
-        chartKondisi.data.labels.push(label);
-        chartKondisi.data.datasets[0].data.push(Number(m.angin_rata2  ?? 0));
-        chartKondisi.data.datasets[1].data.push(Number(m.hujan_rata2  ?? 0));
-        chartKondisi.data.datasets[2].data.push(Number(m.cahaya_rata2 ?? 0));
+      // Ambil hanya yang bulannya = bulan ini
+      const keys = Object.keys(allDays)
+        .filter(k => k.startsWith(bulanKeyPrefix))
+        .sort(); // urut tanggal
+
+      if (keys.length === 0) {
+        elLastUpdate.textContent =
+          `Belum ada data per hari untuk bulan ${yyyy}-${mm} di E_PerHari_Avg.`;
+        chartKondisi.update();
+        return;
+      }
+
+      keys.forEach((fullKey) => {
+        const d = allDays[fullKey];
+        const dd = fullKey.slice(-2); // ambil "DD"
+        chartKondisi.data.labels.push(dd);
+        chartKondisi.data.datasets[0].data.push(Number(d.angin_rata2  ?? 0));
+        chartKondisi.data.datasets[1].data.push(Number(d.hujan_rata2  ?? 0));
+        chartKondisi.data.datasets[2].data.push(Number(d.cahaya_rata2 ?? 0));
       });
 
       chartKondisi.update();
@@ -259,7 +270,7 @@
     );
 
     // Load history sekali saat halaman dibuka
-    loadHistoryPerMenitHariIni();
+    loadHistoryPerHariBulanIni();
   </script>
 </body>
 </html>
