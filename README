@@ -1,56 +1,32 @@
-# 🌤️ Weather Monitoring Dashboard (ESP32 + Firebase)
+# Dashboard Monitoring Cuaca (IoT + ESP32 dengan Firebase)
 
-Proyek ini menampilkan data **cuaca secara realtime** dari ESP32 Weather Station ke Firebase Realtime Database dan menampilkannya di halaman web dashboard.
+Dashboard ini menampilkan:
+- Data sensor terbaru (`/KondisiSaatIni`)
+- Grafik realtime (per detik - rolling)
+- Tabel data rata-rata per-menit harian (`/PerMenit/YYYY-MM-DD`)
 
-## 🚀 Fitur
-- Realtime update dari Firebase Realtime Database
-- Tampilan responsif (Bootstrap), bisa di‑hosting di GitHub Pages
-- Data yang ditampilkan:
-  - 💨 Kecepatan Angin (m/s)
-  - 🌧️ Curah Hujan (mm)
-  - 💡 Intensitas Cahaya (lx)
-  - 🕒 Waktu update terakhir (RTC)
+### Cara Pakai
+1. Upload kode ESP32 ke alatmu (struktur node sudah otomatis dibuat).
+2. Deploy `index.html` dan `dashboard.js` ke Github Pages/repo statis URL-mu.
+3. Buka file HTML di browser.  
+   a. Card sensor: real-time live  
+   b. Grafik: 40 data terakhir  
+   c. Tabel: data rata-rata/cuplikan per-menit sesuai tanggal
 
-## 🔧 Struktur Proyek
+**Kebutuhan:**  
+- Daftar database dan key Firebase, masukkan ke bagian `firebaseConfig`
+- Tersedia token hanya untuk data _public read_ (atau set rule read true)
 
-> Catatan: Kode ESP32 (alat fisik) ada di sketch terpisah, misalnya folder `weather-station-esp32/`.
-
-## ⚙️ Firebase Realtime Database
-
-Struktur data utama yang dikirim dari ESP32 dan dibaca oleh dashboard:
-
-
-Dashboard web saat ini fokus membaca node `/A_KondisiSaatIni` untuk kondisi cuaca terkini.
-
-## 📡 Cara Menjalankan
-
-1. **Siapkan Firebase Project**
-   - Buat project `monitoring-kel-12` di Firebase Console.
-   - Aktifkan **Realtime Database** dengan lokasi `asia-southeast1`.
-   - Untuk pengujian, atur *rules* sementara:
-
-- Buat Web App dan salin konfigurasi (`apiKey`, `authDomain`, `databaseURL`, `projectId`, `storageBucket`, `messagingSenderId`, `appId`) ke objek `firebaseConfig` di `index.html`.
-
-2. **Jalankan ESP32 Weather Station**
-- Upload sketch ESP32 yang:
-  - Menggunakan `DATABASE_URL`  
-    `https://monitoring-kel-12-default-rtdb.asia-southeast1.firebasedatabase.app/`
-  - Mengirim data sensor ke path `/A_KondisiSaatIni` dengan field:
-    `angin_mps`, `hujan_mm`, `cahaya_lx`, dan `waktu`.
-
-3. **Jalankan Dashboard Web**
-- Buka `index.html` di browser **atau** host di GitHub Pages (misalnya repo `kelompok12tree-pixel.github.io`).
-- Jika koneksi berhasil dan data dari ESP32 sudah masuk ke `/A_KondisiSaatIni`, dashboard akan menampilkan nilai cuaca secara realtime.
-
-## 💻 Teknologi
-
-- ESP32 (C++ / Arduino)
-- Firebase Realtime Database
-- HTML5, CSS3, JavaScript (ES6 Module, Firebase v9)
-- Bootstrap 5 (UI)
-- GitHub Pages (Hosting)
+### Struktur Data (Firebase RTDB)
+- `/KondisiSaatIni` : data sensor terakhir (angin, hujan, cahaya)
+- `/PerMenit/YYYY-MM-DD/HH-MM` : data agregat rata-rata per menit
+- dst (`/PerJam`, `/PerHari`) sesuai script ESP32
 
 ---
 
-🔥 **Developed by:** Andrean & Kelompok 12  
-🧠 Powered by ESP32 + Firebase + OpenAI GPT
+> Template dashboard ini sudah siap untuk repo Github Pages/public static hosting.  
+> Mudah dikembangkan menjadi monitoring multi-parameter atau log bulanan/harian.
+
+---
+
+Jika perlu integrasi agregat lain (jam/hari/minggu), tinggal tambah fungsi JS baru sesuai kebutuhan.
