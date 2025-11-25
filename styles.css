@@ -10,20 +10,6 @@ body {
   margin: 1.3em 0 0.5em 0;
   font-weight: bold;
 }
-.notif-banner {
-  width: 80%;
-  margin: 0.6em auto 0.5em auto;
-  padding: 14px 20px;
-  text-align: center;
-  background: #ff4943;
-  color: #fff;
-  font-size: 1.15em;
-  font-weight: bold;
-  border-radius: 10px;
-  box-shadow: 0 0 12px #ff49434a;
-  display: none;
-}
-.notif-banner.show { display: block; }
 .last-update {
   text-align: center;
   color: #8df294;
