@@ -3,55 +3,47 @@ import {
   getDatabase, ref, onValue, query, orderByKey, limitToLast
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-// -- Konfigurasi Firebase, sesuaikan dengan punyamu bila perlu --
 const firebaseConfig = {
   apiKey: "AIzaSyD-eCZun9Chghk2z0rdPrEuIKkMojrM5g0",
   authDomain: "monitoring-ver-j.firebaseapp.com",
   databaseURL: "https://monitoring-ver-j-default-rtdb.asia-southeast1.firebasedatabase.app",
 };
-
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
-// ---- KARTU REALTIME ----
-const cardsDIV = document.getElementById('realtime-cards');
-function updateRealtimeCard(d) {
-  cardsDIV.innerHTML = `
-    <div class="card">
-      <b>Angin</b><br/>${d.anemometer?.toFixed(1) ?? '—'} km/h
-      <br/><b>Curah Hujan</b><br/>${d.rain_gauge?.toFixed(2) ?? '—'} mm
-      <br/><b>Cahaya</b><br/>${d.sensor_cahaya?.toFixed(1) ?? '—'} lx
-      <br/><span style="font-size:14px;color:#888">Update: ${d.waktu??'-'}</span>
-    </div>
-  `;
+function setGauge(id, val) {
+  document.getElementById(id).textContent = (val != null ? Number(val).toFixed(2) : "-");
 }
 onValue(ref(db, "/weather/keadaan_sekarang"), snap => {
-  updateRealtimeCard(snap.val() ?? {});
+  const d = snap.val() ?? {};
+  setGauge("gauge-angin", d.anemometer);
+  setGauge("gauge-hujan", d.rain_gauge);
+  setGauge("gauge-cahaya", d.sensor_cahaya);
 });
 
-// ---- HISTORI TABEL & GRAFIK ----
+// -------- HISTORI + GRAFIK --------
 const tabelBody = document.querySelector('#histori-table tbody');
-const ctxChart = document.getElementById('chart-garis').getContext('2d');
+const ctxChart = document.getElementById('grafik-garis').getContext('2d');
 const chart = new Chart(ctxChart, {
   type: 'line',
   data: {
     labels: [],
     datasets: [
-      {label:'Angin (km/h)',   data:[], borderColor:'#0077cc', backgroundColor:'#0077cc33', yAxisID: 'y', tension:0.2},
-      {label:'Hujan (mm)',     data:[], borderColor:'#229944', backgroundColor:'#22994433', yAxisID: 'y2', tension:0.2},
-      {label:'Cahaya (lx)',    data:[], borderColor:'#ffaa00', backgroundColor:'#ffaa0022', yAxisID: 'y', tension:0.2}
+      { label: 'Angin (km/h)', data: [], borderColor: '#31c7ff', backgroundColor: 'rgba(49,199,255,0.25)', yAxisID: 'y', tension:0.25 },
+      { label: 'Hujan (mm)',   data: [], borderColor: '#44e691', backgroundColor: 'rgba(68,230,145,0.18)', yAxisID: 'y2', tension:0.2 },
+      { label: 'Cahaya (lx)',  data: [], borderColor: '#ffe066', backgroundColor: 'rgba(255,224,102,0.17)', yAxisID: 'y', tension:0.18 }
     ]
   },
   options: {
-    plugins: { legend: {position:'top'}, title: {display:true, text:'Grafik Angin-Hujan-Cahaya (Log)'} },
+    plugins: { legend: {labels:{color:'#fff'}}, title: {display:false}},
     scales: {
-      y:  {type:'linear', display:true, position:'left',  title:{display:true, text:'Angin/Cahaya'}},
-      y2: {type:'linear', display:true, position:'right', title:{display:true, text:'Hujan'}, grid:{drawOnChartArea:false}}
+      x: { ticks: {color:'#fff'} },
+      y:  {type:'linear', display:true, position:'left',  title:{display:true, text:'Angin/Cahaya',color:'#fff'}, ticks:{color:'#79bbff'} },
+      y2: {type:'linear', display:true, position:'right', title:{display:true, text:'Hujan',color:'#49ffa1'}, grid:{drawOnChartArea:false}, ticks:{color:'#63ffaa'} }
     }
   }
 });
 
-// ambil 36 histori terakhir (±3 menit, bisa diubah)
 onValue(query(ref(db, '/weather/histori'), orderByKey(), limitToLast(36)), snap => {
   const arr = [];
   snap.forEach(child => {
@@ -64,13 +56,12 @@ onValue(query(ref(db, '/weather/histori'), orderByKey(), limitToLast(36)), snap 
     });
   });
   arr.sort((a,b)=>a.waktu.localeCompare(b.waktu));
-
   tabelBody.innerHTML = arr.map(r => `
     <tr>
       <td>${r.waktu}</td>
-      <td>${r.angin.toFixed(1)}</td>
-      <td>${r.hujan.toFixed(2)}</td>
-      <td>${r.cahaya.toFixed(1)}</td>
+      <td class="value-angin">${r.angin.toFixed(1)}</td>
+      <td class="value-hujan">${r.hujan.toFixed(2)}</td>
+      <td class="value-cahaya">${r.cahaya.toFixed(1)}</td>
     </tr>
   `).reverse().join('');
 
