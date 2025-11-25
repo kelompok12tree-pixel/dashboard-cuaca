@@ -2,40 +2,30 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>CAWS Monitoring Dashboard</title>
+  <title>Dashboard Monitoring Cuaca</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Firebase CDN NON MODULE, PASTIKAN INI -->
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
   <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="kualitas-row">
-    <div class="status-box" id="cuaca-status">STATUS</div>
-    <div id="last-update">Data terakhir diperbarui: …</div>
-  </div>
-  <div class="big-row">
-    <div class="summary-card"><div>ANGIN</div><div id="wind-val">0.00</div><span>m/s</span></div>
-    <div class="summary-card"><div>HUJAN</div><div id="rain-val">0.00</div><span>mm</span></div>
-    <div class="summary-card"><div>CAHAYA</div><div id="light-val">0.00</div><span>lux</span></div>
-  </div>
-  <div class="chartbox">
-    <h3>Tren Per Jam (24 Jam Terakhir)</h3>
-    <canvas id="chart-hour"></canvas>
-    <h3>Tren Harian (7 Hari Terakhir)</h3>
-    <canvas id="chart-day"></canvas>
-    <h3>Tren Bulanan (12 Bulan Terakhir)</h3>
-    <canvas id="chart-month"></canvas>
-  </div>
-  <div class="rekap-panel">
-    <h2>Rekap Data (Per Menit)</h2>
-    <button onclick="downloadCSV()">Download CSV</button>
-    <table id="data-table">
-      <thead>
-        <tr><th>Waktu</th><th>Angin (m/s)</th><th>Hujan (mm)</th><th>Cahaya (lux)</th><th>Status</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  <div style="max-width:820px;margin:16px auto 0 auto;">
+    <h2 style="text-align:center;color:#c8feee;">Dashboard Monitoring Cuaca</h2>
+    <div style="display:flex;gap:18px;justify-content:center;">
+      <div style="background:#282848;padding:23px 32px;border-radius:13px;color:#36f8da;font-size:2.2em;" id="wind">-</div>
+      <div style="background:#282848;padding:23px 32px;border-radius:13px;color:#fade62;font-size:2.2em;" id="rain">-</div>
+      <div style="background:#282848;padding:23px 32px;border-radius:13px;color:#a1ff99;font-size:2.2em;" id="light">-</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;color:#fade62;font-size:1.09em;margin:14px 30px;">
+      <span id="waktu-update">Waktu: -</span>
+      <span id="last-update">Data terakhir diperbarui: -</span>
+    </div>
+    <div style="background:#282848;border-radius:15px;box-shadow:0 0 18px #3337;padding:20px;margin:16px 0;">
+      <h3 style="text-align:center;color:#a1ff99;">Grafik Sensor per Jam</h3>
+      <canvas id="realtimeChart"></canvas>
+    </div>
   </div>
 </body>
 </html>
