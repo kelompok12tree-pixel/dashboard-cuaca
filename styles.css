@@ -1,16 +1,75 @@
-body {background:#232336;color:#e7eaf3;font-family:'Segoe UI',Arial,sans-serif;}
-.kualitas-row{display:flex;justify-content:space-between;align-items:center;margin:24px;}
-.status-box{font-weight:bold;background:#36f8da;color:#113 w; padding:9px 24px;border-radius:7px;}
-.big-row{display:flex;gap:18px;justify-content:center;margin-bottom:22px;}
-.summary-card{background:#282848;color:#1fc762;font-size:1.35em;padding:21px 33px;border-radius:11px;min-width:140px;box-shadow:0 0 12px #3333;}
-.summary-card span{color:#fade62;}
-.box-label{font-size:0.87em;color:#a1ff99;margin-bottom:3px;}
-.box-value{font-size:2.0em;font-weight:bold;color:#36f8da;}
-.chartbox{background:#252540;border-radius:14px;padding:18px 14px;margin:13px 22px 38px 22px;}
-h3{color:#a6fbde;text-align:center;margin-bottom:18px;}
-.rekap-panel{margin:12px auto 40px auto; max-width:900px;background:#282848; border-radius:11px;padding:23px;}
-#data-table{width:100%; border-collapse:collapse;background:#232336;}
-#data-table th,#data-table td{padding:10px;text-align:center;border:1px solid #222;}
-#data-table th{background:#365485; color:#fff;}
-#data-table tr:nth-child(even){background:#282848;}
-button{background:#36f8da;color:#000;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;margin-bottom:8px;font-size:1em;}
+body {
+  background: #232336;
+  color: #e7eaf3;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 850px;
+  margin: 29px auto 0 auto;
+  background: #232336;
+  padding: 12px 6px 2px 6px;
+}
+h2 {
+  text-align: center;
+  color: #c8feee;
+  margin: 12px 0 22px 0;
+  letter-spacing: 1.1px;
+}
+.row-cards {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+.card {
+  background: #282848;
+  border-radius: 14px;
+  min-width: 150px;
+  text-align: center;
+  box-shadow: 0 0 16px #3332;
+  padding: 29px 44px;
+}
+.card-label {
+  color: #73ead0;
+  font-weight: 600;
+  font-size: 1em;
+  margin-bottom: 6px;
+}
+.card-value {
+  font-size: 2.32em;
+  font-weight: bold;
+  color: #36f8da;
+  margin-top: 14px;
+  letter-spacing: 1.2px;
+}
+.card:nth-child(2) .card-value { color: #fade62; }
+.card:nth-child(3) .card-value { color: #a1ff99; }
+.waktu-row {
+  display: flex;
+  justify-content: space-between;
+  color: #fade62;
+  font-size: 1.11em;
+  margin: 14px 36px 16px 36px;
+}
+.chart-panel {
+  background: #282848;
+  border-radius: 15px;
+  box-shadow: 0 0 20px #32323260;
+  padding: 22px 24px 22px 24px;
+  margin-top: 18px;
+}
+h3 {
+  color: #a1ff99;
+  text-align: center;
+  margin-bottom: 13px;
+  font-size: 1.21em;
+  letter-spacing: 0.5px;
+}
+canvas {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 7px #2224;
+  min-height: 290px;
+}
