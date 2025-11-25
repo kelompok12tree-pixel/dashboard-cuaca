@@ -1,88 +1,94 @@
-// == KONFIGURASI SESUAI FIREBASE PROYEK AKTIF ==
-const firebaseConfig = {
-  apiKey: "AIzaSyD-eCZun9Chghk2z0rdPrEuIKkMojrM5g0",
-  authDomain: "monitoring-ver-j.firebaseapp.com",
-  databaseURL: "https://monitoring-ver-j-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "monitoring-ver-j",
-  storageBucket: "monitoring-ver-j.appspot.com",
-  messagingSenderId: "237639687534",
-  appId: "1:237639687534:web:4e61c13e6537455c34757f"
-};
-
+const firebaseConfig = { /* config sesuai projectmu */ };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-let historiArray = [];
 
-// Ambil data histori, render tabel & grafik
-db.ref("/weather/histori").on('value', function(snap) {
-  // LOG DIAGNOSA -- ini WAJIB!
-  console.log("ISI DARI FIREBASE:", snap.val());
-  
-  const data = snap.val();
-  historiArray = [];
-  const tbody = document.querySelector("#history tbody");
-  tbody.innerHTML = '';
-  if(!data) return;
-  const keys = Object.keys(data).sort();
+let fullLog = [];
+let jamLabel=[], jamAngin=[], jamHujan=[], jamCahaya=[];
+let hariLabel=[], hariAngin=[], hariHujan=[], hariCahaya=[];
+let bulanLabel=[], bulanAngin=[], bulanHujan=[], bulanCahaya=[];
+let chartHour, chartDay, chartMonth;
+
+// Ambil histori (struktur: /weather/histori/key: {anemometer, rain_gauge, sensor_cahaya, waktu})
+db.ref("/weather/histori").on('value', snap => {
+  const data = snap.val() || {};
+  fullLog = [];
+  const keys = Object.keys(data).sort(); // Urutkan kronologis
   keys.forEach(function(k){
     const d = data[k];
-    historiArray.push(d);
-    tbody.innerHTML += `<tr>
-      <td>${d.waktu ?? k}</td>
-      <td>${d.anemometer?.toFixed?.(1) ?? d.anemometer ?? ''}</td>
-      <td>${d.rain_gauge?.toFixed?.(2) ?? d.rain_gauge ?? ''}</td>
-      <td>${d.sensor_cahaya?.toFixed?.(1) ?? d.sensor_cahaya ?? ''}</td>
-    </tr>`;
+    fullLog.push(d); // simpan untuk rekap tabel
+
+    // Data summary terakhir, update box
+    if(k === keys[keys.length-1]){
+      document.getElementById('wind-val').textContent  = (d.anemometer ?? 0).toFixed(2);
+      document.getElementById('rain-val').textContent  = (d.rain_gauge ?? 0).toFixed(2);
+      document.getElementById('light-val').textContent = (d.sensor_cahaya ?? 0).toFixed(0);
+      document.getElementById('last-update').textContent = "Data terakhir diperbarui: " + (d.waktu ?? k);
+
+      // Kualitas status contoh sederhana
+      let status = "CUACA BAIK";
+      if((d.anemometer ?? 0) > 20) status = "ANGIN KENCANG";
+      else if((d.rain_gauge ?? 0) > 10) status = "HUJAN DERAS";
+      document.getElementById('cuaca-status').textContent = status;
+    }
   });
-  // Update box overview & grafik
-  if(historiArray.length) {
-    updateOverview(historiArray[historiArray.length-1]);
-    drawHourlyChart(historiArray);
-  }
+
+  // Grafik per jam (24 jam terakhir)
+  jamLabel  = fullLog.slice(-24).map(e=>e.waktu?.split(' ')[1] ?? '');
+  jamAngin  = fullLog.slice(-24).map(e=>e.anemometer ?? 0);
+  jamHujan  = fullLog.slice(-24).map(e=>e.rain_gauge ?? 0);
+  jamCahaya = fullLog.slice(-24).map(e=>e.sensor_cahaya ?? 0);
+
+  // Grafik harian, bulanan dsb. bisa digrouping berdasarkan hari/bulan
+  // (contoh: groupBy log lewat fungsi JS, di sini bisa pakai slice/aggregate manual)
+
+  drawChart();
+  fillTable();
 });
 
-function updateOverview(data) {
-  document.getElementById('wind').textContent  = `Angin\n${data.anemometer?.toFixed?.(1) ?? '-' } km/h`;
-  document.getElementById('rain').textContent  = `Hujan\n${data.rain_gauge?.toFixed?.(2) ?? '-' } mm`;
-  document.getElementById('light').textContent = `Cahaya\n${data.sensor_cahaya?.toFixed?.(1) ?? '-' } lux`;
-  document.getElementById('last-update').textContent = "Data terakhir diperbarui: " + (data.waktu ?? '-');
-}
-function drawHourlyChart(data) {
-  const ctx = document.getElementById('hourlyChart').getContext('2d');
-  const hourly = data.slice(-24);
-  const labels = hourly.map(row => row.waktu?.split(' ')[1] ?? '');
-  const wind   = hourly.map(row => row.anemometer);
-  const rain   = hourly.map(row => row.rain_gauge);
-  const light  = hourly.map(row => row.sensor_cahaya);
-  if(window.hourlyChart) window.hourlyChart.destroy();
-  window.hourlyChart = new Chart(ctx, {
-    type: 'line',
-    data: { 
-      labels, 
-      datasets: [
-        { label:'Angin', data:wind, borderColor:'#36f8da', tension:0.2 },
-        { label:'Hujan', data:rain, borderColor:'#ffca38', tension:0.2 },
-        { label:'Cahaya', data:light, borderColor:'#a1ff99', tension:0.2 }
-      ] 
+function drawChart(){
+  if(chartHour) chartHour.destroy();
+  chartHour = new Chart(document.getElementById('chart-hour').getContext('2d'), {
+    type:'line',
+    data:{ labels:jamLabel,
+      datasets:[
+        {label:'Angin',data:jamAngin,borderColor:'#36f8da',yAxisID:'y1'},
+        {label:'Hujan',data:jamHujan,borderColor:'#fade62',yAxisID:'y1'},
+        {label:'Cahaya',data:jamCahaya,borderColor:'#a1ff99',yAxisID:'y2'}
+      ]
     },
-    options:{ plugins:{legend:{labels:{color:'#fff'}}}, scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
+    options:{
+      plugins:{legend:{labels:{color:'#fff'}}},
+      scales:{
+        x:{ticks:{color:'#fff'}},
+        y1:{position:'left',min:0,ticks:{color:'#36f8da'}},
+        y2:{position:'right',min:0,ticks:{color:'#a1ff99'},grid:{drawOnChartArea:false}}
+      }
+    }
+  });
+  // Grafik harian dan bulanan bisa dibuat mirip, atau group/aggregate harian/bulan
+}
+
+function fillTable(){
+  const tbody=document.querySelector("#data-table tbody");
+  tbody.innerHTML='';
+  fullLog.slice(-60).reverse().forEach(row=>{
+    tbody.innerHTML += `<tr>
+      <td>${row.waktu??''}</td>
+      <td>${row.anemometer?.toFixed?.(2)??row.anemometer??''}</td>
+      <td>${row.rain_gauge?.toFixed?.(2)??row.rain_gauge??''}</td>
+      <td>${row.sensor_cahaya?.toFixed?.(1)??row.sensor_cahaya??''}</td>
+      <td>${row.status??'OK'}</td>
+    </tr>`;
   });
 }
 function downloadCSV() {
-  let csv = 'Waktu,Angin (km/h),Hujan (mm),Cahaya (lux)\n';
-  historiArray.forEach(row => {
+  let csv = 'Waktu,Angin (m/s),Hujan (mm),Cahaya (lux),Status\n';
+  fullLog.forEach(r=>{
     csv += [
-      row.waktu??'',
-      row.anemometer?.toFixed?.(1)??row.anemometer??'',
-      row.rain_gauge?.toFixed?.(2)??row.rain_gauge??'',
-      row.sensor_cahaya?.toFixed?.(1)??row.sensor_cahaya??''
+      r.waktu??'',r.anemometer??'',r.rain_gauge??'',r.sensor_cahaya??'',r.status??'OK'
     ].join(',')+'\n';
   });
-  const blob = new Blob([csv], {type: 'text/csv'});
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'histori.csv';
-  a.click();
-  window.URL.revokeObjectURL(url);
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=window.URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='rekap.csv';a.click();window.URL.revokeObjectURL(url);
 }
