@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Monitoring Cuaca Realtime</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="app.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 28px;}
+    .card {
+      border:1px solid #eee; border-radius:9px; display:inline-block;
+      width:350px;padding:16px;margin:16px;vertical-align:top;
+      background: #f9faff;
+      box-shadow: 0 2px 8px #ccc2;
+    }
+    #histori-table { border-collapse:collapse;margin-top:16px;}
+    #histori-table th, #histori-table td {padding:6px 16px;border:1px solid #eee;}
+    #histori-table th {background: #f1f3f9;}
+  </style>
+</head>
+<body>
+  <h2>Monitoring Cuaca Realtime</h2>
+  <div id="realtime-cards"></div>
+  <canvas id="chart-garis" height="120"></canvas>
+  <div>
+    <h3>Histori Log (Terbaru)</h3>
+    <table id="histori-table">
+      <thead>
+        <tr>
+          <th>Waktu</th><th>Angin (km/h)</th><th>Hujan (mm)</th><th>Cahaya (lx)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</body>
+</html>
