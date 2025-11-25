@@ -1,13 +1,13 @@
-// Firebase v10 CDN mode
 const firebaseConfig = {
-  apiKey: "AIzaSyCcTrvQyf5g2AAmHOLuXQeBbeR4hjGxYSw",
-  authDomain: "monitoring-kel-12.firebaseapp.com",
-  databaseURL: "https://monitoring-kel-12-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "monitoring-kel-12",
-  storageBucket: "monitoring-kel-12.firebasestorage.app",
-  messagingSenderId: "224809559356",
-  appId: "1:224809559356:web:4ebfdc0c93695d8c39ea39"
+  apiKey: "AIzaSyD-eCZun9Chghk2z0rdPrEuIKkMojrM5g0",
+  authDomain: "monitoring-ver-j.firebaseapp.com",
+  databaseURL: "https://monitoring-ver-j-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "monitoring-ver-j",
+  storageBucket: "monitoring-ver-j.appspot.com",
+  messagingSenderId: "237639687534",
+  appId: "1:237639687534:web:4e61c13e6537455c34757f"
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 let historiArray = [];
