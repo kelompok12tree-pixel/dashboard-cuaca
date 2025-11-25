@@ -1,82 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Weather Monitoring Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>Dashboard Monitoring Cuaca</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="app.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { background: #171c2a; color: #fff; }
-    .top-bar { padding: 24px 0 12px 0; }
-    .card-summary { border-radius: 13px; background: linear-gradient(135deg,#23274a,#275398); }
-    .summary-label { color: #aee3ff; font-size:15px; margin-bottom:10px;}
-    .card-summary .summary-value { font-size: 2.7em; font-weight: bold;}
-    .summary-angin   { color: #31c7ff; }
-    .summary-hujan   { color: #44e691; }
-    .summary-cahaya  { color: #ffe066; }
-    .dashboard-title { font-size:2em;font-weight:700;text-shadow:0 3px 20px #0e111d;}
-    .tab-btns { margin:12px 0 18px 0; }
-    .tab-btns .btn { margin-right:7px;}
-    .table-custom { font-size:15px; }
-    .table-custom th, .table-custom td { background: #20263b; color:#fff; }
-    .table-custom td.value-angin   { color:#31c7ff; font-weight:600;}
-    .table-custom td.value-hujan   { color:#44e691; font-weight:600;}
-    .table-custom td.value-cahaya  { color:#ffe066; font-weight:600;}
-    .table-custom tr:hover { background: #293060; }
-    .chart-panel { background:#23274a;border-radius:13px;padding:20px;}
-    .download-btn { background: #21c074; color:#fff; font-weight:600;}
-  </style>
+  <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <div class="top-bar">
-      <div class="dashboard-title">Weather Monitoring Dashboard</div>
-      <div>Monitoring ESP32 • Firebase • Github Pages</div>
-    </div>
-    <div class="row my-3">
-      <div class="col-lg-4 my-2">
-        <div class="card-summary p-4">
-          <div class="summary-label">Angin</div>
-          <div id="val-angin" class="summary-value summary-angin">—</div>
-          <div class="summary-label">km/h</div>
-        </div>
-      </div>
-      <div class="col-lg-4 my-2">
-        <div class="card-summary p-4">
-          <div class="summary-label">Hujan Harian</div>
-          <div id="val-hujan" class="summary-value summary-hujan">—</div>
-          <div class="summary-label">mm</div>
-        </div>
-      </div>
-      <div class="col-lg-4 my-2">
-        <div class="card-summary p-4">
-          <div class="summary-label">Cahaya</div>
-          <div id="val-cahaya" class="summary-value summary-cahaya">—</div>
-          <div class="summary-label">lux</div>
-        </div>
-      </div>
-    </div>
-    <div class="chart-panel mb-4">
-      <canvas id="grafik-sensor" height="90"></canvas>
-    </div>
-    <div class="d-flex align-items-center my-2 tab-btns">
-      <span class="me-2 fw-bold fs-4">Histori Data (Terbaru)</span>
-      <button id="downloadCsvBtn" class="btn btn-sm download-btn">Download CSV</button>
-    </div>
-    <div class="table-responsive">
-      <table class="table table-custom">
-        <thead>
-          <tr>
-            <th>Waktu</th>
-            <th>Angin (km/h)</th>
-            <th>Hujan (mm)</th>
-            <th>Cahaya (lx)</th>
-          </tr>
-        </thead>
-        <tbody id="histori-body"></tbody>
-      </table>
-    </div>
+  <h1>Dashboard Monitoring Cuaca</h1>
+  <div id="overview">
+    <div id="wind"></div>
+    <div id="rain"></div>
+    <div id="light"></div>
+    <div id="waktu"></div>
   </div>
+  <div>
+    <button onclick="downloadCSV()">Download CSV</button>
+  </div>
+
+  <h2>Grafik Kecepatan Angin (Per Jam)</h2>
+  <canvas id="hourlyChart"></canvas>
+
+  <h2>Rekap Histori Data</h2>
+  <table id="history">
+    <thead>
+      <tr>
+        <th>Waktu</th>
+        <th>Angin (km/h)</th>
+        <th>Hujan (mm)</th>
+        <th>Cahaya (lux)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 </body>
 </html>
