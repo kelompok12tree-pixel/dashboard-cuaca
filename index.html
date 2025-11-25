@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Monitoring Cuaca</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <h1 class="banner-title">Dashboard Monitoring Cuaca</h1>
+  <div id="notifWeather" class="notif-banner"></div>
+  <div class="last-update" id="last-update">Data terakhir diperbarui ...</div>
+  <div class="overview-row">
+    <div class="overview-card" id="wind">---</div>
+    <div class="overview-card" id="rain">---</div>
+    <div class="overview-card" id="light">---</div>
+  </div>
+  <h2>Grafik Kecepatan Angin (Per Jam)</h2>
+  <div class="chart-container"><canvas id="hourlyChart"></canvas></div>
+  <h2>Grafik Kecepatan Angin (Harian)</h2>
+  <div class="chart-container"><canvas id="dailyChart"></canvas></div>
+  <h2>Grafik Kecepatan Angin (Mingguan)</h2>
+  <div class="chart-container"><canvas id="weeklyChart"></canvas></div>
+  <h2>Grafik Kecepatan Angin (Bulanan)</h2>
+  <div class="chart-container"><canvas id="monthlyChart"></canvas></div>
+  <h2>Rekap Histori Data</h2>
+  <button class="download-csv" onclick="downloadCSV()">Download CSV</button>
+  <div class="table-container">
+    <table id="history">
+      <thead>
+        <tr>
+          <th>Waktu</th>
+          <th>Angin (km/h)</th>
+          <th>Hujan (mm)</th>
+          <th>Cahaya (lux)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</body>
+</html>
