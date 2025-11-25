@@ -1,4 +1,4 @@
-// PASTE INI untuk versi langsung index.html tanpa import/export/module/npm
+// Firebase v10 CDN mode
 const firebaseConfig = {
   apiKey: "AIzaSyCcTrvQyf5g2AAmHOLuXQeBbeR4hjGxYSw",
   authDomain: "monitoring-kel-12.firebaseapp.com",
@@ -12,6 +12,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 let historiArray = [];
 
+// Ambil histori
 db.ref("/weather/histori").on('value', function(snap) {
   const data = snap.val();
   historiArray = [];
@@ -29,11 +30,10 @@ db.ref("/weather/histori").on('value', function(snap) {
       <td>${d.sensor_cahaya?.toFixed?.(1) ?? d.sensor_cahaya ?? ''}</td>
     </tr>`;
   });
-  // Update overview & grafik
+  // Update overview
   if(historiArray.length) {
     updateOverview(historiArray[historiArray.length-1]);
     drawHourlyChart(historiArray);
-    // ...Tambahkan grafik lain jika mau
   }
 });
 
@@ -43,7 +43,6 @@ function updateOverview(data) {
   document.getElementById('light').textContent = `Cahaya\n${data.sensor_cahaya?.toFixed?.(1) ?? '-' } lux`;
   document.getElementById('last-update').textContent = "Data terakhir diperbarui: " + (data.waktu ?? '-');
 }
-
 function drawHourlyChart(data) {
   const ctx = document.getElementById('hourlyChart').getContext('2d');
   const hourly = data.slice(-24);
@@ -64,4 +63,22 @@ function drawHourlyChart(data) {
     },
     options:{ plugins:{legend:{labels:{color:'#fff'}}}, scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
   });
+}
+function downloadCSV() {
+  let csv = 'Waktu,Angin (km/h),Hujan (mm),Cahaya (lux)\n';
+  historiArray.forEach(row => {
+    csv += [
+      row.waktu??'',
+      row.anemometer?.toFixed?.(1)??row.anemometer??'',
+      row.rain_gauge?.toFixed?.(2)??row.rain_gauge??'',
+      row.sensor_cahaya?.toFixed?.(1)??row.sensor_cahaya??''
+    ].join(',')+'\n';
+  });
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'histori.csv';
+  a.click();
+  window.URL.revokeObjectURL(url);
 }
