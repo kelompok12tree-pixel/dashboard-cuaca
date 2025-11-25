@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weather Monitor Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="app.js"></script>
+  <style>
+    body { background: #151924; color: #fff;}
+    .card {
+      background: linear-gradient(135deg,#22274a 80%, #223f79 100%);
+      border:none; border-radius:13px; margin-bottom:20px; box-shadow:0 6px 18px #0004;
+    }
+    .dashgrid { display:grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap:22px; }
+    .gauge { font-size:2.5em; font-weight:600; }
+    .gauge.angin   { color:#31c7ff; text-shadow:0 0 8px #31c7ff66; }
+    .gauge.hujan   { color:#44e691; text-shadow:0 0 8px #44e69133;}
+    .gauge.cahaya  { color:#ffe066; text-shadow:0 0 9px #ffe06655;}
+    .label-box { font-size:14px; letter-spacing:1px; color:#cfcfe6;}
+    #histori-table th, #histori-table td { font-size:15px;}
+    #histori-table td.value-angin   { color:#3ecfff;   font-weight:600;}
+    #histori-table td.value-hujan   { color:#44e691;   font-weight:600;}
+    #histori-table td.value-cahaya  { color:#ffe066;   font-weight:600;}
+    #histori-table tr:hover { background: #2a3260; }
+    .chartjs-render-monitor { background: #22274a; border-radius:11px; padding:13px;}
+  </style>
+</head>
+<body>
+  <div class="container py-3">
+    <h2 class="fw-bold mb-1">Weather Monitor Board</h2>
+    <div class="mb-3 label-box">Monitoring ESP32 Firebase - Dashboard Realtime</div>
+    <div class="dashgrid">
+
+      <div class="card p-4">
+        <div class="label-box mb-2">Kecepatan Angin</div>
+        <div id="gauge-angin" class="gauge angin">-</div>
+        <div class="label-box">km/h</div>
+      </div>
+      <div class="card p-4">
+        <div class="label-box mb-2">Curah Hujan Harian</div>
+        <div id="gauge-hujan" class="gauge hujan">-</div>
+        <div class="label-box">mm</div>
+      </div>
+      <div class="card p-4">
+        <div class="label-box mb-2">Cahaya</div>
+        <div id="gauge-cahaya" class="gauge cahaya">-</div>
+        <div class="label-box">lux</div>
+      </div>
+      <div class="card p-4" style="grid-column: span 2;">
+        <div class="label-box mb-2">Grafik Riwayat Sensor</div>
+        <canvas id="grafik-garis" height="110"></canvas>
+      </div>
+      <div class="card p-3">
+        <div class="label-box mb-2">Histori (Terbaru)</div>
+        <table class="table table-dark table-striped table-bordered" id="histori-table">
+          <thead>
+            <tr>
+              <th>Waktu</th>
+              <th>Angin<br>(km/h)</th>
+              <th>Hujan<br>(mm)</th>
+              <th>Cahaya<br>(lx)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
