@@ -1,3 +1,4 @@
+// == KONFIGURASI SESUAI FIREBASE PROYEK AKTIF ==
 const firebaseConfig = {
   apiKey: "AIzaSyD-eCZun9Chghk2z0rdPrEuIKkMojrM5g0",
   authDomain: "monitoring-ver-j.firebaseapp.com",
@@ -8,11 +9,12 @@ const firebaseConfig = {
   appId: "1:237639687534:web:4e61c13e6537455c34757f"
 };
 
+// Inisialisasi Firebase classic (CDN, langsung jalan di browser!)
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 let historiArray = [];
 
-// Ambil histori
+// Ambil data histori, render tabel & grafik
 db.ref("/weather/histori").on('value', function(snap) {
   const data = snap.val();
   historiArray = [];
@@ -30,7 +32,7 @@ db.ref("/weather/histori").on('value', function(snap) {
       <td>${d.sensor_cahaya?.toFixed?.(1) ?? d.sensor_cahaya ?? ''}</td>
     </tr>`;
   });
-  // Update overview
+  // Update box overview & grafik
   if(historiArray.length) {
     updateOverview(historiArray[historiArray.length-1]);
     drawHourlyChart(historiArray);
