@@ -9,13 +9,15 @@ const firebaseConfig = {
   appId: "1:237639687534:web:4e61c13e6537455c34757f"
 };
 
-// Inisialisasi Firebase classic (CDN, langsung jalan di browser!)
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 let historiArray = [];
 
 // Ambil data histori, render tabel & grafik
 db.ref("/weather/histori").on('value', function(snap) {
+  // LOG DIAGNOSA -- ini WAJIB!
+  console.log("ISI DARI FIREBASE:", snap.val());
+  
   const data = snap.val();
   historiArray = [];
   const tbody = document.querySelector("#history tbody");
