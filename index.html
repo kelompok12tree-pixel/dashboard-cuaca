@@ -10,20 +10,28 @@
   <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="banner-title">
-    <h1>Dashboard Monitoring Cuaca</h1>
-  </div>
+  <h1 class="banner-title">Dashboard Monitoring Cuaca</h1>
   <div class="last-update" id="last-update">Data terakhir diperbarui ...</div>
-  
   <div class="overview-row">
-    <div id="wind"></div>
-    <div id="rain"></div>
-    <div id="light"></div>
-
+    <div class="overview-card" id="wind">---</div>
+    <div class="overview-card" id="rain">---</div>
+    <div class="overview-card" id="light">---</div>
   </div>
   <h2>Grafik Kecepatan Angin (Per Jam)</h2>
   <div class="chart-container">
-  <canvas id="hourlyChart"></canvas>
+    <canvas id="hourlyChart"></canvas>
+  </div>
+  <h2>Grafik Kecepatan Angin (Harian)</h2>
+  <div class="chart-container">
+    <canvas id="dailyChart"></canvas>
+  </div>
+  <h2>Grafik Kecepatan Angin (Mingguan)</h2>
+  <div class="chart-container">
+    <canvas id="weeklyChart"></canvas>
+  </div>
+  <h2>Grafik Kecepatan Angin (Bulanan)</h2>
+  <div class="chart-container">
+    <canvas id="monthlyChart"></canvas>
   </div>
   <h2>Rekap Histori Data</h2>
   <button class="download-csv" onclick="downloadCSV()">Download CSV</button>
