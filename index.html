@@ -4,7 +4,11 @@
   <meta charset="UTF-8">
   <title>Dashboard Monitoring Cuaca</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Firebase v10 browser (NO import) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -15,7 +19,7 @@
     <div class="overview-card" id="rain">---</div>
     <div class="overview-card" id="light">---</div>
   </div>
-  <h2>Grafik Kecepatan Angin (Per Jam)</h2>
+  <h2>Grafik Sensor per Jam</h2>
   <div class="chart-container"><canvas id="hourlyChart"></canvas></div>
   <h2>Rekap Histori Data</h2>
   <button class="download-csv" onclick="downloadCSV()">Download CSV</button>
