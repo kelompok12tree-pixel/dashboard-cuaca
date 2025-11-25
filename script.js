@@ -14,10 +14,10 @@ const db = firebase.database();
 let historiArray = [];
 
 function updateOverview(data) {
-  document.getElementById('wind').textContent  = `Angin: ${data.anemometer?.toFixed(1) ?? '-'} km/h`;
-  document.getElementById('rain').textContent  = `Hujan: ${data.rain_gauge?.toFixed(2) ?? '-'} mm`;
-  document.getElementById('light').textContent = `Cahaya: ${data.sensor_cahaya?.toFixed(1) ?? '-'} lux`;
-  document.getElementById('waktu').textContent = `Waktu: ${data.waktu ?? '-'}`;
+  document.getElementById('wind').textContent  = `Angin\n${data.anemometer?.toFixed(1) ?? '-'} km/h`;
+  document.getElementById('rain').textContent  = `Hujan\n${data.rain_gauge?.toFixed(2) ?? '-'} mm`;
+  document.getElementById('light').textContent = `Cahaya\n${data.sensor_cahaya?.toFixed(1) ?? '-'} lux`;
+  document.getElementById('last-update').textContent = "Data terakhir diperbarui: " + (data.waktu ?? '-');
 }
 
 db.ref("/weather/keadaan_sekarang").on('value', snap => {
@@ -63,7 +63,6 @@ function downloadCSV() {
   window.URL.revokeObjectURL(url);
 }
 
-// Chart.js grafik angin per jam
 function drawHourlyChart(data) {
   const ctx = document.getElementById('hourlyChart').getContext('2d');
   const labels = data.map(row => row.waktu?.split(' ')[1]);
